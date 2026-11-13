@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 import requests
 import logging
+import time
 
 app = FastAPI(title="Order Service")
 
@@ -47,3 +48,20 @@ def create_order(mode: str = "normal"):
             status_code=502,
             detail="Payment service failed"
         )
+
+@app.get("/cpu")
+def cpu_load(seconds: int = 15):
+    seconds = max(1, min(seconds, 30))
+
+    end_time = time.time() + seconds
+    value = 0
+
+    while time.time() < end_time:
+        value = (value * 13 + 7) % 1000003
+
+    logger.warning("CPU load simulation completed")
+
+    return {
+        "status": "completed",
+        "duration_seconds": seconds
+    }
